@@ -1,0 +1,64 @@
+import React, { useState } from 'react';
+
+const TollCalculator = () => {
+  const [vehicleType, setVehicleType] = useState('car');
+  const [distance, setDistance] = useState('');
+  const [tollCost, setTollCost] = useState(null);
+
+  const tollRates = {
+    car: 0.10,
+    truck: 0.20,
+    motorcycle: 0.05,
+  };
+
+  const calculateToll = () => {
+    try {
+      const distanceFloat = parseFloat(distance);
+      if (isNaN(distanceFloat) || distanceFloat < 0) {
+        throw new Error('Distance must be a positive number');
+      }
+
+      if (!(vehicleType in tollRates)) {
+        throw new Error('Invalid vehicle type');
+      }
+
+      const rate = tollRates[vehicleType];
+      const calculatedToll = rate * distanceFloat;
+      setTollCost(calculatedToll.toFixed(2));
+    } catch (error) {
+      setTollCost(null);
+      console.error(error.message);
+    }
+  };
+
+  return (
+    <div>
+      <h1>Toll Calculator</h1>
+      <label>
+        Vehicle Type:
+        <select value={vehicleType} onChange={(e) => setVehicleType(e.target.value)}>
+          {Object.keys(tollRates).map((type) => (
+            <option key={type} value={type}>
+              {type}
+            </option>
+          ))}
+        </select>
+      </label>
+      <br />
+      <label>
+        Distance (in miles):
+        <input type="text" value={distance} onChange={(e) => setDistance(e.target.value)} />
+      </label>
+      <br />
+      <button onClick={calculateToll}>Calculate Toll</button>
+      {tollCost !== null && (
+        <div>
+          <h2>Toll Cost:</h2>
+          <p>${tollCost}</p>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default TollCalculator;
